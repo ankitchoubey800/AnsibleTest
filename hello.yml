@@ -1,0 +1,26 @@
+---
+- name: Hello from IBM Cloud Schematics
+  hosts: localhost
+  connection: local
+  gather_facts: true
+
+  vars:
+    greeting: "Hello, Ansible on IBM Cloud!"
+
+  tasks:
+    - name: Print greeting
+      ansible.builtin.debug:
+        msg: "{{ greeting }}"
+
+    - name: Show facts about the Schematics runner
+      ansible.builtin.debug:
+        msg: "Running on {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}, Python {{ ansible_facts['python_version'] }}"
+
+    - name: Loop example
+      ansible.builtin.debug:
+        msg: "Learning topic: {{ item }}"
+      loop:
+        - inventory
+        - modules
+        - variables
+        - handlers
