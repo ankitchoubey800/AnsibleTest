@@ -1,0 +1,36 @@
+---
+- name: Configure web server on IBM Cloud VSI
+  hosts: web
+  become: true
+
+  vars:
+    site_title: "Deployed by Ansible on IBM Cloud"
+
+  tasks:
+    - name: Install nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+        update_cache: true
+
+    - name: Deploy custom homepage
+      ansible.builtin.copy:
+        dest: /var/www/html/index.html
+        content: |
+          <h1>{{ site_title }}</h1>
+          <p>Host: {{ ansible_facts['hostname'] }}</p>
+          <p>OS: {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}</p>
+          <p>IP: {{ ansible_facts['default_ipv4']['address'] }}</p>
+      notify: Reload nginx
+
+    - name: Ensure nginx is running and enabled
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+
+  handlers:
+    - name: Reload nginx
+      ansible.builtin.service:
+        name: nginx
+        state: reloaded
